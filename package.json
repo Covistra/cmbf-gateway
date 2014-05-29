@@ -1,0 +1,16 @@
+{
+  "name": "vibes-proxy",
+  "description": "Vibes Reverse Proxy",
+  "author": "Joel Grenon <jgrenon@vibes.io>",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "http://npm.vibes.io/"
+  },
+  "dependencies": {
+    "bunyan": "~0.22.3",
+    "http-proxy": "1.1.4",
+    "js-yaml": "2.1.3",
+    "lodash": "2.4.1",
+    "rc": "^0.4.0"
+  }
+}

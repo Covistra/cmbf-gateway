@@ -1,0 +1,6 @@
+# Sample Routes
+
+# Route including path matching
+- target: http://localhost:9001
+  pattern:
+    host: !<tag:yaml.org,2002:js/regexp> vibes\.io

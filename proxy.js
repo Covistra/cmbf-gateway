@@ -8,14 +8,14 @@ var httpProxy = require('http-proxy'),
     _ = require('lodash');
 
 // Load proxy configuration
-var conf = require('rc')('smartscan_proxy', {
+var conf = require('rc')(packageInfo.name, {
     log_level: 'info',
     port: 80,
     secure_port: 443
 });
 
 var log = bunyan.createLogger({name: 'proxy', level:conf.log_level || 'info'});
-log.info("Smartscan Proxy Server", packageInfo.version);
+log.info("Vibes Proxy Server", packageInfo.version);
 
 // Create the proxy server used by both front servers
 var proxy = httpProxy.createProxyServer();

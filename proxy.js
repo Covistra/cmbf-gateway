@@ -15,7 +15,7 @@ var conf = require('rc')(packageInfo.name, {
 });
 
 var log = bunyan.createLogger({name: 'proxy', level:conf.log_level || 'info'});
-log.info("Vibes Proxy Server", packageInfo.version);
+log.info(packageInfo.name + " Server", packageInfo.version);
 
 // Create the proxy server used by both front servers
 var proxy = httpProxy.createProxyServer();

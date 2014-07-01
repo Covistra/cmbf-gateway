@@ -41,7 +41,7 @@ if(conf.secure) {
 
 log.info("Loading routes from file %s", conf.routefile);
 var Routes = Yaml.load(fs.readFileSync(conf.routefile)+ '');
-log.info("Registering %d routes", Routes.length);
+log.info("Registering %d route(s)", Routes.length);
 
 // Standard proxy
 function baseRouter(req, res) {

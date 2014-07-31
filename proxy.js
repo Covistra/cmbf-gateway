@@ -4,7 +4,9 @@ var httpProxy = require('http-proxy'),
     Yaml = require('js-yaml'),
     fs = require('fs'),
     packageInfo = require('./package.json'),
+    crypto = require('crypto'),
     bunyan = require('bunyan'),
+    URL = require('url'),
     _ = require('lodash');
 
 // Load proxy configuration
@@ -29,11 +31,24 @@ var server = http.createServer(baseRouter);
 server.listen(conf.port);
 server.on('upgrade', wsRouter);
 
+var secure_certs = {
+    default: crypto.createCredentials({
+        key: fs.readFileSync(conf.secure_key),
+        cert: fs.readFileSync(conf.secure_cert)
+    }).context
+};
+
 // Configure a secure server if requested
 if(conf.secure) {
     var secureServer = https.createServer({
+
+        // Default to configured SSL certificate and key
         key:fs.readFileSync(conf.secure_key),
-        cert:fs.readFileSync(conf.secure_cert)
+        cert:fs.readFileSync(conf.secure_cert),
+
+        SNICallback: function(hostname) {
+            return secure_certs[hostname];
+        }
     }, baseRouter);
     secureServer.listen(conf.secure_port);
     secureServer.on('upgrade', wsRouter);
@@ -42,6 +57,20 @@ if(conf.secure) {
 log.info("Loading routes from file %s", conf.routefile);
 var Routes = Yaml.load(fs.readFileSync(conf.routefile)+ '');
 log.info("Registering %d route(s)", Routes.length);
+
+// Create all secure contexts for each route
+_.each(Routes, function(route) {
+    var url = URL.parse(route.target);
+
+    if(route.key) {
+        secure_certs[url.host] = crypto.createCredentials({
+            key: fs.readFileSync(route.key),
+            cert: fs.readFileSync(route.cert)
+        }).context;
+    }
+    else
+        secure_certs[url.host] = secure_certs.default;
+});
 
 // Standard proxy
 function baseRouter(req, res) {

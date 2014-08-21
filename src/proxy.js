@@ -3,7 +3,7 @@ var httpProxy = require('http-proxy'),
     https = require('https'),
     Yaml = require('js-yaml'),
     fs = require('fs'),
-    packageInfo = require('./package.json'),
+    packageInfo = require('./../package.json'),
     crypto = require('crypto'),
     bunyan = require('bunyan'),
     URL = require('url'),
@@ -31,15 +31,17 @@ var server = http.createServer(baseRouter);
 server.listen(conf.port);
 server.on('upgrade', wsRouter);
 
-var secure_certs = {
-    default: crypto.createCredentials({
-        key: fs.readFileSync(conf.secure_key),
-        cert: fs.readFileSync(conf.secure_cert)
-    }).context
-};
+var secure_certs = {};
 
 // Configure a secure server if requested
 if(conf.secure) {
+
+    // Load the default SSL certificate for all routes that haven't got a cert/key pair
+    secure_certs.default = crypto.createCredentials({
+        key: fs.readFileSync(conf.secure_key),
+        cert: fs.readFileSync(conf.secure_cert)
+    }).context;
+
     var secureServer = https.createServer({
 
         // Default to configured SSL certificate and key
@@ -47,7 +49,7 @@ if(conf.secure) {
         cert:fs.readFileSync(conf.secure_cert),
 
         SNICallback: function(hostname) {
-            return secure_certs[hostname];
+            return secure_certs[hostname] || secure_certs.default;
         }
     }, baseRouter);
     secureServer.listen(conf.secure_port);

@@ -6,6 +6,11 @@
   "publishConfig": {
     "registry": "http://npm.vibes.io/"
   },
+  "main": "./src/proxy.js",
+  "repository":{
+      "type": "git",
+      "url": "https://jgrenon@git.vibes.io/vibesio/vibes-proxy.git"
+  },
   "dependencies": {
     "bunyan": "~0.22.3",
     "http-proxy": "1.1.4",

@@ -74,13 +74,13 @@ _.each(Routes, function(route) {
     var url = URL.parse(route.target);
 
     if(route.key) {
-        secure_certs[url.host] = crypto.createCredentials({
+        secure_certs[route.hostname] = crypto.createCredentials({
             key: fs.readFileSync(route.key),
             cert: fs.readFileSync(route.cert)
         }).context;
     }
     else
-        secure_certs[url.host] = secure_certs.default;
+        secure_certs[route.hostname || url.host] = secure_certs.default;
 });
 
 // Standard proxy

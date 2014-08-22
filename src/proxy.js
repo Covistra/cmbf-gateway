@@ -49,14 +49,14 @@ if(conf.secure) {
         cert:fs.readFileSync(conf.secure_cert),
 
         SNICallback: function(hostname) {
-            log.trace("Looking for SSL certificate host host %s", hostname);
+            log.debug("Looking for SSL certificate host host %s", hostname);
             var ctx = secure_certs[hostname];
             if(!ctx) {
-                log.warn("No SSL certificate found for hostname %s. fallback to default")
+                log.warn("No SSL certificate found for hostname %s. fallback to default", hostname);
                 ctx = secure_certs.default;
             }
             else
-                log.trace("Certificate was found for hostname %s", hostname);
+                log.debug("Certificate was found for hostname %s", hostname);
 
             return ctx;
         }

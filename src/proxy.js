@@ -94,8 +94,8 @@ function baseRouter(req, res) {
         // Check if this route is secure, if so, make sure to redirect any http requests to https
         log.debug("Is it a secure route?", !_.isUndefined(rule.key));
 
-        if(rule.key && req.headers.host) {
-            var urlFrags = URL.parse(req.headers.host);
+        if(rule.key && req.headers.referer) {
+            var urlFrags = URL.parse(req.headers.referer);
             log.trace("Analyzing url  %s fragments:", req.headers.host, urlFrags);
             if(urlFrags.protocol === 'http:') {
                 log.warn("Permanently redirecting non-secure content to our secure server");
@@ -108,7 +108,7 @@ function baseRouter(req, res) {
                 log.debug("Detected protocol was ", urlFrags.protocol);
         }
         else {
-            log.trace("Not a secure request or host header is", req.headers.host);
+            log.trace("Not a secure request or referer header is", req.headers.referer);
         }
 
         // Proxy the web request

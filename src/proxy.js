@@ -94,9 +94,8 @@ function baseRouter(req, res) {
         // Check if this route is secure, if so, make sure to redirect any http requests to https
         log.debug("Is it a secure route?", !_.isUndefined(rule.key));
 
-        if(rule.key) {
-            log.debug("Checking if we're target a non-secure content");
-            var urlFrags = URL.parse(req.url);
+        if(rule.key && req.headers.host) {
+            var urlFrags = URL.parse(req.headers.host);
             if(urlFrags.protocol === 'http:') {
                 log.warn("Permanently redirecting non-secure content to our secure server");
                 urlFrags.protocol = "https:";

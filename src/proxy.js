@@ -92,7 +92,9 @@ function baseRouter(req, res) {
         log.debug("proxying request %s%s to target %s", req.headers.host, req.url, rule.target);
 
         if(rule.key) {
-            res.writeHead(301, {});
+            res.writeHead(301, {
+                Location: "https://" + rule.hostname + req.url
+            });
             return res.end();
         }
 

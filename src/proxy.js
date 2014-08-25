@@ -90,6 +90,20 @@ function baseRouter(req, res) {
     var rule = _.find(Routes, routeMatcher(req));
     if(rule) {
         log.debug("proxying request %s%s to target %s", req.headers.host, req.url, rule.target);
+
+        // Check if this route is secure, if so, make sure to redirect any http requests to https
+        if(rule.key) {
+            var urlFrags = URL.parse(req.url);
+            if(urlFrags.protocol === 'http:') {
+                log.warn("Permanently redirecting non-secure content to our secure server");
+                urlFrags.protocol = "https:";
+                return res.writeHead(301, {
+                    Location: URL.format(urlFrags)
+                });
+            }
+        }
+
+        // Proxy the web request
         proxy.web(req, res, {target: rule.target, xfwd: true}, function(err) {
             if(err) {
                 log.error("Error proxying request %s%s to target %s", req.headers.host, req.url, rule.target, err);

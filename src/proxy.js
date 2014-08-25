@@ -96,6 +96,7 @@ function baseRouter(req, res) {
 
         if(rule.key && req.headers.host) {
             var urlFrags = URL.parse(req.headers.host);
+            log.trace("Analyzing url  %s fragments:", req.headers.host, urlFrags);
             if(urlFrags.protocol === 'http:') {
                 log.warn("Permanently redirecting non-secure content to our secure server");
                 urlFrags.protocol = "https:";
@@ -104,7 +105,7 @@ function baseRouter(req, res) {
                 });
             }
             else
-                log.trace("Detected protocol was ", urlFrags.protocol);
+                log.debug("Detected protocol was ", urlFrags.protocol);
         }
         else {
             log.trace("Not a secure request or host header is", req.headers.host);

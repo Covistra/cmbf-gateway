@@ -106,6 +106,9 @@ function baseRouter(req, res) {
             else
                 log.trace("Detected protocol was ", urlFrags.protocol);
         }
+        else {
+            log.trace("Not a secure request or host header is", req.headers.host);
+        }
 
         // Proxy the web request
         proxy.web(req, res, {target: rule.target, xfwd: true}, function(err) {
@@ -156,7 +159,7 @@ function routeMatcher(req) {
         log.trace("Analyzing route", t);
 
         if(req.headers && req.headers.host) {
-            log.debug("analysing host %s", req.headers.host);
+            log.trace("analysing host %s", req.headers.host);
 
             if(req.headers.host.match(t.pattern.host)) {
                 log.trace("route host matched", t.pattern.host);

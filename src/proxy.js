@@ -60,7 +60,7 @@ if(conf.secure) {
 
             return ctx;
         }
-    }, baseRouter);
+    }, baseSecureRouter);
     secureServer.listen(conf.secure_port);
     secureServer.on('upgrade', wsRouter);
 }
@@ -91,8 +91,41 @@ function baseRouter(req, res) {
     if(rule) {
         log.debug("proxying request %s%s to target %s", req.headers.host, req.url, rule.target);
 
-        // Check if this route is secure, if so, make sure to redirect any http requests to https
-        log.debug("Is it a secure route?", !_.isUndefined(rule.key));
+        if(rule.key) {
+            res.writeHead(301, {});
+            return res.end();
+        }
+
+        // Proxy the web request
+        proxy.web(req, res, {target: rule.target, xfwd: true}, function(err) {
+            if(err) {
+                log.error("Error proxying request %s%s to target %s", req.headers.host, req.url, rule.target, err);
+                res.writeHead(500, {
+                    'Content-Type': 'text/plain'
+                });
+                res.end('Something went wrong. And we are reporting a custom error message.');
+
+            }
+            else
+                log.trace("request  %s%s was successfully proxied to target %s", req.headers.host, req.url, rule.target);
+        });
+    }
+    else {
+        log.warn("no matching route for %s%s", req.headers.host, req.url);
+        res.writeHead(503, {
+            'Content-Type': 'text/plain'
+        });
+        res.end('unreachable route: '+req.headers.host+ req.url);
+    }
+}
+
+// Standard Secure proxy
+function baseSecureRouter(req, res) {
+    log.debug("received request %s%s", req.headers.host, req.url);
+
+    var rule = _.find(Routes, routeMatcher(req));
+    if(rule) {
+        log.debug("proxying request %s%s to target %s", req.headers.host, req.url, rule.target);
 
         if(rule.key && req.headers.referer) {
             var urlFrags = URL.parse(req.headers.referer);
@@ -100,9 +133,10 @@ function baseRouter(req, res) {
             if(urlFrags.protocol === 'http:') {
                 log.warn("Permanently redirecting non-secure content to our secure server");
                 urlFrags.protocol = "https:";
-                return res.writeHead(301, {
+                res.writeHead(301, {
                     Location: URL.format(urlFrags)
                 });
+                return res.end();
             }
             else
                 log.debug("Detected protocol was ", urlFrags.protocol);

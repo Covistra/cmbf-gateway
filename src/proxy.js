@@ -129,23 +129,23 @@ function baseSecureRouter(req, res) {
     if(rule) {
         log.debug("proxying request %s%s to target %s", req.headers.host, req.url, rule.target);
 
-        if(rule.key && req.headers.referer) {
-            var urlFrags = URL.parse(req.headers.referer);
-            log.trace("Analyzing url  %s fragments:", req.headers.host, urlFrags);
-            if(urlFrags.protocol === 'http:') {
-                log.warn("Permanently redirecting non-secure content to our secure server");
-                urlFrags.protocol = "https:";
-                res.writeHead(301, {
-                    Location: URL.format(urlFrags)
-                });
-                return res.end();
-            }
-            else
-                log.debug("Detected protocol was ", urlFrags.protocol);
-        }
-        else {
-            log.trace("Not a secure request or referer header is", req.headers.referer);
-        }
+        //if(rule.key && req.headers.referer) {
+        //    var urlFrags = URL.parse(req.headers.referer);
+        //    log.trace("Analyzing url  %s fragments:", req.headers.host, urlFrags);
+        //    if(urlFrags.protocol === 'http:') {
+        //        log.warn("Permanently redirecting non-secure content to our secure server");
+        //        urlFrags.protocol = "https:";
+        //        res.writeHead(301, {
+        //            Location: URL.format(urlFrags)
+        //        });
+        //        return res.end();
+        //    }
+        //    else
+        //        log.debug("Detected protocol was ", urlFrags.protocol);
+        //}
+        //else {
+        //    log.trace("Not a secure request or referer header is", req.headers.referer);
+        //}
 
         // Proxy the web request
         proxy.web(req, res, {target: rule.target, xfwd: true}, function(err) {

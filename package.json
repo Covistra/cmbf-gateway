@@ -1,12 +1,12 @@
 {
   "name": "proxy",
-  "description": "Covistra Reverse Proxy",
+  "description": "CMBF Cluster Gateway",
   "author": "Joel Grenon <joelgrenon@covistra.com>",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "main": "./src/proxy.js",
   "repository": {
     "type": "git",
-    "url": "https://jgrenon@git.vibes.io/vibesio/vibes-proxy.git"
+    "url": "https://github.com/Covistra/cmbf-gateway.git"
   },
   "dependencies": {
     "bunyan": "^1.7.0",

@@ -2,7 +2,7 @@
 
 # Route including path matching
 - target: http://localhost:9001
-  key: /etc/proxy/ssl/mysite.key.pem
-  cert: /etc/proxy/ssl/mysite.cert.pem
+#  key: /etc/proxy/ssl/mysite.key.pem
+#  cert: /etc/proxy/ssl/mysite.cert.pem
   pattern:
     host: !<tag:yaml.org,2002:js/regexp> vibes\.io

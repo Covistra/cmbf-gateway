@@ -1,22 +1,22 @@
-FROM phusion/baseimage
+FROM node:4.2.4
+MAINTAINER Joel Grenon <joelgrenon@covistra.com>
 
-# Set correct environment variables.
-ENV HOME /root
+RUN apt-get update && apt-get install -y openssh-server supervisor
+RUN mkdir -p /var/run/sshd /var/log/supervisor
+COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Regenerate SSH host keys. baseimage-docker does not contain any, so you
-# have to do that yourself. You may also comment out this instruction; the
-# init system will auto-generate one during boot.
-RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
+ADD . /opt/app
 
-# Install NodeJS
+RUN chmod +x /opt/app/bin/proxyd
 
+# Set the current working directory to the new mapped folder.
+WORKDIR /opt/app
 
+# Install the express generator which gives you also scaffolding tools.
+RUN npm install --production
 
-# RUN mkdir /etc/service/vibes-proxy
-# ADD ./bin/proxy.sh /etc/service/vibes-proxy/run
+# Expose the node.js port to the Docker host.
+EXPOSE 80 443 22
 
-# Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]
-
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# This is the stock express binary to start the app.
+CMD ["/usr/bin/supervisord"]

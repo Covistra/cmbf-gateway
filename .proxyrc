@@ -1,0 +1,7 @@
+routefile=./sample-routes.yml
+port=8080
+secure=false
+secure_port=8443
+log_level=warn
+secure_key=/etc/proxy/ssl/server.key
+secure_cert=/etc/proxy/ssl/server.pem
